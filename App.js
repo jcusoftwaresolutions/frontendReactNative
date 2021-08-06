@@ -1,49 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text } from 'react-native';
-
-import { Button } from 'react-native-paper';
-
-import auth from '@react-native-firebase/auth';
-
-function App() {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  // Handle user state changes
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import Login from './screens/Login';
 
 
-  auth()
-    .signOut()
-    .then(() => console.log('User signed out!'));
+const Stack = createNativeStackNavigator();
 
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  if (initializing) return null;
-
-  if (!user) {
-    return (
-      <View>
-        <Button dark={true} icon="camera" mode="contained" onPress={() => console.log('Pressed')}>
-          Press me
-        </Button>
-        <Text>Login</Text>
-      </View>
-    );
-  }
-
-
-
+function DetailsScreen() {
   return (
-    <View>
-      <Text>Welcome {user.email}</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Details Screen</Text>
     </View>
+  );
+}
+
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{
+        headerTitle: {
+          backgroundColor: '#f4511e'
+        }
+      }}>
+        <Stack.Screen
+          name="Login" component={Login}
+          options={{
+            title: 'Login Screen',
+          }}
+        />
+        <Stack.Screen
+          name="Home" component={HomeScreen}
+          options={{
+            title: 'Overview',
+            headerRight: () => (<Text>Pressed it</Text>)
+          }}
+        />
+
+        <Stack.Screen
+          name="DetailsScreen" component={DetailsScreen}
+          options={{ title: 'Details Screen' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
